@@ -74,5 +74,6 @@ if __name__ == "__main__":
 
     # x = Thread(target=game_loop, args=(1,))
     # x.start()
-
+    
+    print(f'Listening on http://{ip_address}:{port}')
     socketio.run(app, host=ip_address, port=port)
