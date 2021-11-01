@@ -6,22 +6,22 @@ import { DRACOLoader } from "./three.js/examples/jsm/loaders/DRACOLoader.js";
 import { OrbitControls } from "./three.js/examples/jsm/controls/OrbitControls.js";
 
 
-function httpGet(Url) {
+function httpGet( Url ) {
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("GET", Url, false); // false for synchronous request
-    xmlHttp.send(null);
-    return JSON.parse(xmlHttp.responseText);
+    xmlHttp.open( "GET", Url, false ); // false for synchronous request
+    xmlHttp.send( null );
+    return JSON.parse( xmlHttp.responseText );
 }
 
 
-function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+function sleep( ms ) {
+    return new Promise( ( resolve ) => setTimeout( resolve, ms ) );
 }
 
 
-function initStats(Stats) {
+function initStats( Stats ) {
     var stats = new Stats();
-    stats.setMode(0); // 0: fps, 1: ms
+    stats.setMode( 0 ); // 0: fps, 1: ms
 
     // Align top-left
     stats.domElement.style.position = "absolute";
@@ -29,6 +29,34 @@ function initStats(Stats) {
     stats.domElement.style.top = "0px";
     document.body.appendChild( stats.dom );
     return stats;
+}
+
+
+function loadAndAdd( loader, scene, file_name ) {
+    // Load a glTF resource
+    loader.load(
+        // resource URL
+        file_name,
+        // called when the resource is loaded
+        function ( gltf ) {
+
+            scene.add( gltf.scene ); 
+        
+        },
+        // called while loading is progressing
+        function ( xhr ) {
+
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+        },
+        // called when loading has errors
+        function ( error ) {
+
+            console.log( 'An error happened' );
+
+        }
+    );
+    
 }
 
 
@@ -42,7 +70,7 @@ function init() {
     document.body.appendChild( renderer.domElement );
     var controls = new OrbitControls( camera, renderer.domElement );
     controls.enableKeys = false;
-    controls.enabled = false;
+    // controls.enabled = false;
 
     window.addEventListener("resize", function () {
         var width = window.innerWidth;
@@ -65,9 +93,6 @@ function init() {
     const manager = new THREE.LoadingManager();
     manager.addHandler( /\.dds$/i, new DDSLoader() );
 
-    var GLBFile = 'models/water_maze.glb';
-    var JPGFile = 'models/grunge.jpg';
-
     // Instantiate a loader
     const loader = new GLTFLoader();
 
@@ -76,46 +101,31 @@ function init() {
     dracoLoader.setDecoderPath('/three.js/examples/js/libs/draco/');
     loader.setDRACOLoader( dracoLoader );
 
-    // Load a glTF resource
-    loader.load(
-        // resource URL
-        GLBFile,
-        // called when the resource is loaded
-        function ( gltf ) {
+    // Load 3D model
+    loadAndAdd(loader, scene, 'models/water_maze.glb');
 
-            scene.add( gltf.scene );
+    // Skybox
+    const cubeTextureLoader = new THREE.CubeTextureLoader();
+    cubeTextureLoader.setPath( 'three.js/examples/textures/cube/Park2/' );
 
-            gltf.animations; // Array<THREE.AnimationClip>
-            gltf.scene; // THREE.Group
-            gltf.scenes; // Array<THREE.Group>
-            gltf.cameras; // Array<THREE.Camera>
-            gltf.asset; // Object
+    const cubeTexture = cubeTextureLoader.load( [
+        "posx.jpg", "negx.jpg",
+        "posy.jpg", "negy.jpg",
+        "posz.jpg", "negz.jpg"
+    ] );
 
-        },
-        // called while loading is progressing
-        function ( xhr ) {
-
-            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-
-        },
-        // called when loading has errors
-        function ( error ) {
-
-            console.log( 'An error happened' );
-
-        }
-    );
+    scene.background = cubeTexture;
 
     // light
-    var directionalLight = new THREE.DirectionalLight( 0xFFFFFF, 1 );
-    directionalLight.position.set( 6, 8, 8 );
+    let directionalLight = new THREE.DirectionalLight( 0xFFFFFF, 2 );
+    directionalLight.position.set( 20, 20, 20 );
     scene.add(directionalLight);
 
-    directionalLight = new THREE.DirectionalLight( 0xFFFFFF, 1 );
-    directionalLight.position.set( -6, -8, -8 );
+    directionalLight = new THREE.DirectionalLight( 0xFFFFFF, 2 );
+    directionalLight.position.set( -20, -20, -20 );
     scene.add(directionalLight);
 
-    var ambientLight = new THREE.AmbientLight( 0xFFFFFF, 0.7 );
+    let ambientLight = new THREE.AmbientLight( 0xFFFFFF, 10 );
     scene.add(ambientLight);
 
     camera.position.set( 0, 50, 0 );
@@ -123,7 +133,7 @@ function init() {
     camera.rotation.y = 0;
     camera.rotation.x = 3.14 / 2;
 
-    return [ scene, renderer, camera, controls ];
+    return [ scene, renderer, camera, controls, loader ];
 }
 
 
