@@ -41,7 +41,7 @@ function loadAnimation( loader, scene, file_prefix, file_index, ) {
     // Load a glTF resource
     loader.load(
         // resource URL
-        file_prefix + pad(file_index, 4) + ".obj.glb",
+        file_prefix + pad(file_index, 4) + ".glb",
         // called when the resource is loaded
         function ( gltf ) {
             // const params = {
@@ -82,7 +82,7 @@ function loadAnimation( loader, scene, file_prefix, file_index, ) {
             // Create the material
             const material = new THREE.MeshPhongMaterial({
                 color: new THREE.Color(0, 1, 1),
-                opacity: 1,
+                opacity: 0.5,
                 transparent: true,
                 emissive: new THREE.Color(0, 1, 1),
                 wireframe: false,
@@ -92,19 +92,20 @@ function loadAnimation( loader, scene, file_prefix, file_index, ) {
             animation_frames.push( water );
             scene.add( animation_frames[file_index - 1] );
 
-            animation_frames[file_index - 1].scale.set(170, 170, 170);
-            animation_frames[file_index - 1].rotation.set(-Math.PI / 2, 0, 0);
-            animation_frames[file_index - 1].position.set(0, -1, 20);
+            // animation_frames[file_index - 1].scale.set(170, 170, 170);
+            animation_frames[file_index - 1].scale.set(95, 95, 95);
+            animation_frames[file_index - 1].rotation.set(-Math.PI / 2 - 0.0174533, -0.0174533, 0);
+            animation_frames[file_index - 1].position.set(-7.5, -0.9, 4.5);
             animation_frames[file_index - 1].visible = false;
             // animation_frames[file_index - 1].material.color = '0xff9900';
             
-            console.log( animation_frames[file_index - 1] );
+            // console.log( animation_frames[file_index - 1] );
 
             for (let n = 0; n < animation_frames[file_index - 1].material.length; ++n) {
                 animation_frames[file_index - 1].material[n] = material
             }
 
-            if (file_index < 30) {
+            if (file_index < 1000) {
                 loadAnimation( loader, scene, file_prefix, file_index + 1 );
             }
 
@@ -112,7 +113,7 @@ function loadAnimation( loader, scene, file_prefix, file_index, ) {
         // called while loading is progressing
         function ( xhr ) {
 
-            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+            if (xhr.loaded / xhr.total * 100 == 100) console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
 
         },
         // called when loading has errors
@@ -131,7 +132,7 @@ window.onload = function() {
     let stats = GRID.initStats( Stats );
 
 
-    loadAnimation( loader, scene, 'flush/fluid_mesh_', 1 );
+    loadAnimation( loader, scene, 'animations/long/fluid_mesh_', 1 );
 
     socket.on( "update", function( msg ) {
         console.log( msg );
@@ -150,8 +151,8 @@ window.onload = function() {
 
         // if (timestamp - lastTimestamp < 1000 / FPS) return;
 
-        if (animation_frames.length == 30) {
-            if (curr >= 29) {
+        if (animation_frames.length > 300) {
+            if (curr >= 999) {
                 animation_frames[curr].visible = false;
                 animation_frames[0].visible = true;
                 curr = 0;

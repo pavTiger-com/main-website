@@ -62,7 +62,7 @@ function loadAndAdd( loader, scene, file_name ) {
 
 function init() {
     var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    var camera = new THREE.PerspectiveCamera( 20, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
     var renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -117,18 +117,18 @@ function init() {
     scene.background = cubeTexture;
 
     // light
-    let directionalLight = new THREE.DirectionalLight( 0xFFFFFF, 2 );
+    let directionalLight = new THREE.DirectionalLight( 0xFFFFFF, 1.5 );
     directionalLight.position.set( 20, 20, 20 );
     scene.add(directionalLight);
 
-    directionalLight = new THREE.DirectionalLight( 0xFFFFFF, 2 );
+    directionalLight = new THREE.DirectionalLight( 0xFFFFFF, 1.5 );
     directionalLight.position.set( -20, -20, -20 );
     scene.add(directionalLight);
 
-    let ambientLight = new THREE.AmbientLight( 0xFFFFFF, 10 );
+    let ambientLight = new THREE.AmbientLight( 0xFFFFFF, 2 );
     scene.add(ambientLight);
 
-    camera.position.set( 0, 50, 0 );
+    camera.position.set( 0, 170, 0 );
 
     camera.rotation.y = 0;
     camera.rotation.x = 3.14 / 2;
